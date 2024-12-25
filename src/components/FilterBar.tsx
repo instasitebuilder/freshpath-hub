@@ -9,6 +9,7 @@ import {
 interface FilterBarProps {
   onPositionChange: (value: string) => void;
   onTypeChange: (value: string) => void;
+  onGraduationYearChange: (value: string) => void;
 }
 
 const positions = [
@@ -31,9 +32,12 @@ const positions = [
 
 const jobTypes = ["Full-time", "Part-time", "Internship", "Contract"];
 
-export const FilterBar = ({ onPositionChange, onTypeChange }: FilterBarProps) => {
+const currentYear = new Date().getFullYear();
+const graduationYears = Array.from({ length: 7 }, (_, i) => (currentYear + i).toString());
+
+export const FilterBar = ({ onPositionChange, onTypeChange, onGraduationYearChange }: FilterBarProps) => {
   return (
-    <div className="flex gap-4 mb-6">
+    <div className="flex flex-wrap gap-4 mb-6">
       <Select onValueChange={onPositionChange}>
         <SelectTrigger className="w-[200px]">
           <SelectValue placeholder="Select Position" />
@@ -55,6 +59,19 @@ export const FilterBar = ({ onPositionChange, onTypeChange }: FilterBarProps) =>
           {jobTypes.map((type) => (
             <SelectItem key={type} value={type}>
               {type}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select onValueChange={onGraduationYearChange}>
+        <SelectTrigger className="w-[200px]">
+          <SelectValue placeholder="Graduation Year" />
+        </SelectTrigger>
+        <SelectContent>
+          {graduationYears.map((year) => (
+            <SelectItem key={year} value={year}>
+              {year}
             </SelectItem>
           ))}
         </SelectContent>
