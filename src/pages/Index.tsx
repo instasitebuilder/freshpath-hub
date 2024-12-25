@@ -2,6 +2,8 @@ import { useState } from "react";
 import { JobCard } from "@/components/JobCard";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 // Mock data for initial development
 const MOCK_JOBS = [
@@ -45,48 +47,52 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-primary py-16 px-4">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Find Your Dream Entry-Level Job
-          </h1>
-          <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
-            Discover opportunities perfectly matched for fresh graduates and early career professionals
-          </p>
-          <div className="flex justify-center">
-            <SearchBar onSearch={handleSearch} />
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow pt-16">
+        {/* Hero Section */}
+        <div className="bg-primary py-16 px-4">
+          <div className="container mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Find Your Dream Entry-Level Job
+            </h1>
+            <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
+              Discover opportunities perfectly matched for fresh graduates and early career professionals
+            </p>
+            <div className="flex justify-center">
+              <SearchBar onSearch={handleSearch} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto py-12 px-4">
-        {/* Filters Section */}
-        <div className="flex flex-wrap gap-4 mb-8">
-          <Button variant="outline">Remote Jobs</Button>
-          <Button variant="outline">Full-time</Button>
-          <Button variant="outline">Internship</Button>
-          <Button variant="outline">Tech</Button>
-          <Button variant="outline">Marketing</Button>
-        </div>
+        {/* Main Content */}
+        <div className="container mx-auto py-12 px-4">
+          {/* Filters Section */}
+          <div className="flex flex-wrap gap-4 mb-8">
+            <Button variant="outline">Remote Jobs</Button>
+            <Button variant="outline">Full-time</Button>
+            <Button variant="outline">Internship</Button>
+            <Button variant="outline">Tech</Button>
+            <Button variant="outline">Marketing</Button>
+          </div>
 
-        {/* Job Listings */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {MOCK_JOBS.map((job) => (
-            <JobCard
-              key={job.id}
-              title={job.title}
-              company={job.company}
-              location={job.location}
-              type={job.type}
-              description={job.description}
-              onClick={() => handleJobClick(job.id)}
-            />
-          ))}
+          {/* Job Listings */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {MOCK_JOBS.map((job) => (
+              <JobCard
+                key={job.id}
+                title={job.title}
+                company={job.company}
+                location={job.location}
+                type={job.type}
+                description={job.description}
+                onClick={() => handleJobClick(job.id)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 };
