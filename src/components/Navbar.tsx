@@ -1,7 +1,7 @@
 import { Code2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Navbar = () => {
+export const Navbar = () => {
   return (
     <nav className="bg-white border-b border-gray-200 fixed w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,5 +25,3 @@ const Navbar = () => {
     </nav>
   );
 };
-
-export default Navbar;
