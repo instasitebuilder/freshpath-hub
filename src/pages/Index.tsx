@@ -7,7 +7,6 @@ import { Footer } from "@/components/Footer";
 import { FilterBar } from "@/components/FilterBar";
 import { useNavigate } from "react-router-dom";
 
-// Mock data with added type field
 const MOCK_JOBS = [
   {
     id: 1,
@@ -43,7 +42,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPosition, setSelectedPosition] = useState("");
   const [selectedType, setSelectedType] = useState("");
-  const [selectedGraduationYear, setSelectedGraduationYear] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -57,8 +56,9 @@ const Index = () => {
 
     const matchesPosition = !selectedPosition || job.position === selectedPosition;
     const matchesType = !selectedType || job.type === selectedType;
+    const matchesLocation = !selectedLocation || job.location === selectedLocation;
 
-    return matchesSearch && matchesPosition && matchesType;
+    return matchesSearch && matchesPosition && matchesType && matchesLocation;
   });
 
   return (
@@ -84,7 +84,7 @@ const Index = () => {
             <FilterBar
               onPositionChange={setSelectedPosition}
               onTypeChange={setSelectedType}
-              onGraduationYearChange={setSelectedGraduationYear}
+              onLocationChange={setSelectedLocation}
             />
             <Button variant="outline" onClick={handleLogout}>
               Logout
