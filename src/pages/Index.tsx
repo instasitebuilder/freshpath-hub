@@ -43,6 +43,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPosition, setSelectedPosition] = useState("");
   const [selectedType, setSelectedType] = useState("");
+  const [selectedGraduationYear, setSelectedGraduationYear] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -83,6 +84,7 @@ const Index = () => {
             <FilterBar
               onPositionChange={setSelectedPosition}
               onTypeChange={setSelectedType}
+              onGraduationYearChange={setSelectedGraduationYear}
             />
             <Button variant="outline" onClick={handleLogout}>
               Logout
