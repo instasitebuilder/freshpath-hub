@@ -4,8 +4,10 @@ import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { FilterBar } from "@/components/FilterBar";
+import { useNavigate } from "react-router-dom";
 
-// Mock data for initial development
+// Mock data with added type field
 const MOCK_JOBS = [
   {
     id: 1,
@@ -14,14 +16,16 @@ const MOCK_JOBS = [
     location: "San Francisco, CA",
     type: "Full-time",
     description: "We're looking for a passionate junior developer to join our growing team. You'll work on exciting projects using modern technologies like React, Node.js, and AWS.",
+    position: "Software Developer"
   },
   {
     id: 2,
     title: "Marketing Associate",
     company: "Growth Marketing Inc",
     location: "New York, NY",
-    type: "Full-time",
+    type: "Part-time",
     description: "Join our marketing team to help drive growth through digital campaigns, social media management, and content creation.",
+    position: "Marketing Associate"
   },
   {
     id: 3,
@@ -30,27 +34,36 @@ const MOCK_JOBS = [
     location: "Remote",
     type: "Internship",
     description: "Great opportunity for fresh graduates to gain hands-on experience with data analysis, visualization, and reporting using modern tools.",
+    position: "Data Analyst"
   },
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPosition, setSelectedPosition] = useState("");
+  const [selectedType, setSelectedType] = useState("");
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    // TODO: Implement actual search functionality
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    navigate("/login");
   };
 
-  const handleJobClick = (jobId: number) => {
-    console.log("Job clicked:", jobId);
-    // TODO: Implement job details view
-  };
+  const filteredJobs = MOCK_JOBS.filter((job) => {
+    const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesPosition = !selectedPosition || job.position === selectedPosition;
+    const matchesType = !selectedType || job.type === selectedType;
+
+    return matchesSearch && matchesPosition && matchesType;
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow pt-16">
-        {/* Hero Section */}
         <div className="bg-primary py-16 px-4">
           <div className="container mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -60,25 +73,24 @@ const Index = () => {
               Discover opportunities perfectly matched for fresh graduates and early career professionals
             </p>
             <div className="flex justify-center">
-              <SearchBar onSearch={handleSearch} />
+              <SearchBar onSearch={setSearchQuery} />
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="container mx-auto py-12 px-4">
-          {/* Filters Section */}
-          <div className="flex flex-wrap gap-4 mb-8">
-            <Button variant="outline">Remote Jobs</Button>
-            <Button variant="outline">Full-time</Button>
-            <Button variant="outline">Internship</Button>
-            <Button variant="outline">Tech</Button>
-            <Button variant="outline">Marketing</Button>
+          <div className="flex justify-between items-center mb-8">
+            <FilterBar
+              onPositionChange={setSelectedPosition}
+              onTypeChange={setSelectedType}
+            />
+            <Button variant="outline" onClick={handleLogout}>
+              Logout
+            </Button>
           </div>
 
-          {/* Job Listings */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {MOCK_JOBS.map((job) => (
+            {filteredJobs.map((job) => (
               <JobCard
                 key={job.id}
                 title={job.title}
@@ -86,7 +98,7 @@ const Index = () => {
                 location={job.location}
                 type={job.type}
                 description={job.description}
-                onClick={() => handleJobClick(job.id)}
+                onClick={() => console.log("Job clicked:", job.id)}
               />
             ))}
           </div>
