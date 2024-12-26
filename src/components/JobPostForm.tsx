@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import Papa from 'papaparse';
 
 export const JobPostForm = () => {
   const [formData, setFormData] = useState({
+    id: String(Date.now()), // Generate unique ID
     title: "",
     company: "",
     location: "",
@@ -17,7 +19,7 @@ export const JobPostForm = () => {
     companyInfo: "",
     applyUrl: "",
     companyUrl: "",
-    logoUrl: "/placeholder.svg", // Default logo
+    logoUrl: "/placeholder.svg",
     postDate: new Date().toISOString().split('T')[0],
   });
 
@@ -25,36 +27,46 @@ export const JobPostForm = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/jobs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // First, fetch existing jobs
+      const response = await fetch('/jobs.csv');
+      const csvText = await response.text();
+      const { data: existingJobs } = Papa.parse(csvText, { header: true });
 
-      if (response.ok) {
-        toast.success("Job posted successfully!");
-        // Reset form
-        setFormData({
-          title: "",
-          company: "",
-          location: "",
-          type: "",
-          salary: "",
-          description: "",
-          responsibilities: "",
-          companyInfo: "",
-          applyUrl: "",
-          companyUrl: "",
-          logoUrl: "/placeholder.svg",
-          postDate: new Date().toISOString().split('T')[0],
-        });
-      } else {
-        toast.error("Failed to post job");
-      }
+      // Format responsibilities as pipe-separated string
+      const formattedData = {
+        ...formData,
+        responsibilities: formData.responsibilities.split('\n').join('|')
+      };
+
+      // Add new job to existing jobs
+      const updatedJobs = [...existingJobs, formattedData];
+
+      // Convert back to CSV
+      const csv = Papa.unparse(updatedJobs);
+
+      // In a real application, you would send this to a server
+      // For now, we'll just show a success message
+      console.log('New CSV data:', csv);
+      toast.success("Job posted successfully!");
+      
+      // Reset form
+      setFormData({
+        id: String(Date.now()),
+        title: "",
+        company: "",
+        location: "",
+        type: "",
+        salary: "",
+        description: "",
+        responsibilities: "",
+        companyInfo: "",
+        applyUrl: "",
+        companyUrl: "",
+        logoUrl: "/placeholder.svg",
+        postDate: new Date().toISOString().split('T')[0],
+      });
     } catch (error) {
-      toast.error("Error posting job");
+      toast.error("Failed to post job");
       console.error("Error:", error);
     }
   };

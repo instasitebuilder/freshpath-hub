@@ -10,12 +10,23 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { JobPostForm } from "./JobPostForm";
+import { useEffect, useState } from "react";
 
 export const Navbar = () => {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure hydration matches client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <nav className="bg-background border-b border-border fixed w-full top-0 z-50">
+    <nav className="bg-background/80 backdrop-blur-sm border-b border-border fixed w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
