@@ -16,7 +16,6 @@ export const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Ensure hydration matches client
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -49,7 +48,7 @@ export const Navbar = () => {
                   Post a Job
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Post a New Job</DialogTitle>
                 </DialogHeader>
@@ -60,6 +59,7 @@ export const Navbar = () => {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="text-foreground"
             >
               {theme === "dark" ? (
                 <Sun className="h-5 w-5" />

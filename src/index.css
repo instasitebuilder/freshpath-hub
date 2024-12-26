@@ -88,9 +88,7 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
@@ -117,5 +115,18 @@
       theme('colors.background/98')
     );
     z-index: -1;
+  }
+
+  /* Dialog styles for job post form */
+  [role="dialog"] {
+    @apply overflow-hidden;
+  }
+
+  [role="dialog"] > div {
+    @apply max-h-[90vh] overflow-y-auto;
+  }
+
+  [role="dialog"] form {
+    @apply p-4;
   }
 }
