@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { JobCard } from "@/components/JobCard";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
@@ -7,36 +6,9 @@ import { Footer } from "@/components/Footer";
 import { FilterBar } from "@/components/FilterBar";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
-const ITEMS_PER_PAGE = 12;
-
-const MOCK_JOBS = [
-  {
-    id: 1,
-    title: "Junior Software Developer",
-    company: "TechCorp Solutions",
-    location: "San Francisco, CA",
-    type: "Full-time",
-    description: "We're looking for a passionate junior developer to join our growing team.",
-    salary: "$70,000 - $90,000",
-    responsibilities: [
-      "Develop and maintain web applications",
-      "Collaborate with cross-functional teams",
-      "Write clean, maintainable code"
-    ],
-    companyInfo: "TechCorp is a leading software company focused on innovation.",
-    logoUrl: "/placeholder.svg"
-  },
-  // ... Add more mock jobs with similar structure
-];
+import { JobList } from "@/components/JobList";
+import { useQuery } from "@tanstack/react-query";
+import { Job, fetchJobs } from "@/services/jobService";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -45,28 +17,40 @@ const Index = () => {
   const [selectedType, setSelectedType] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedJob, setSelectedJob] = useState(null);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  const filteredJobs = MOCK_JOBS.filter((job) => {
+  const { data: jobs = [] } = useQuery({
+    queryKey: ['jobs'],
+    queryFn: fetchJobs,
+  });
+
+  const filteredJobs = jobs.filter((job) => {
     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesPosition = !selectedPosition || job.position === selectedPosition;
+    const matchesPosition = !selectedPosition || job.title.includes(selectedPosition);
     const matchesType = !selectedType || job.type === selectedType;
     const matchesLocation = !selectedLocation || job.location === selectedLocation;
 
     return matchesSearch && matchesPosition && matchesType && matchesLocation;
   });
 
-  const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedJobs = filteredJobs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     navigate("/login");
+  };
+
+  const handleJobSelect = (job: Job) => {
+    setSelectedJob(job);
+    setIsDetailOpen(true);
+  };
+
+  const handleApply = () => {
+    if (selectedJob?.applyUrl) {
+      window.open(selectedJob.applyUrl, '_blank');
+    }
   };
 
   return (
@@ -110,52 +94,12 @@ const Index = () => {
             </Button>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {paginatedJobs.map((job) => (
-              <JobCard
-                key={job.id}
-                title={job.title}
-                company={job.company}
-                location={job.location}
-                type={job.type}
-                description={job.description}
-                logoUrl={job.logoUrl}
-                onClick={() => {
-                  setSelectedJob(job);
-                  setIsDetailOpen(true);
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="mt-8">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(i + 1)}
-                      isActive={currentPage === i + 1}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
+          <JobList 
+            jobs={filteredJobs}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            onJobSelect={handleJobSelect}
+          />
         </div>
       </main>
 
@@ -194,6 +138,10 @@ const Index = () => {
                   <h3 className="font-semibold mb-2">About Company</h3>
                   <p>{selectedJob.companyInfo}</p>
                 </div>
+
+                <Button onClick={handleApply} className="w-full">
+                  Apply Now
+                </Button>
               </div>
             </div>
           )}
