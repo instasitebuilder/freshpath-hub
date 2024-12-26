@@ -11,6 +11,8 @@ export interface Job {
   companyInfo: string;
   logoUrl: string;
   applyUrl: string;
+  companyUrl: string;
+  postDate: string;
   responsibilities: string[];
 }
 

@@ -15,13 +15,48 @@ export const JobPostForm = () => {
     description: "",
     responsibilities: "",
     companyInfo: "",
+    applyUrl: "",
+    companyUrl: "",
+    logoUrl: "/placeholder.svg", // Default logo
+    postDate: new Date().toISOString().split('T')[0],
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log("Form submitted:", formData);
-    toast.success("Job posted successfully!");
+    
+    try {
+      const response = await fetch('/api/jobs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast.success("Job posted successfully!");
+        // Reset form
+        setFormData({
+          title: "",
+          company: "",
+          location: "",
+          type: "",
+          salary: "",
+          description: "",
+          responsibilities: "",
+          companyInfo: "",
+          applyUrl: "",
+          companyUrl: "",
+          logoUrl: "/placeholder.svg",
+          postDate: new Date().toISOString().split('T')[0],
+        });
+      } else {
+        toast.error("Failed to post job");
+      }
+    } catch (error) {
+      toast.error("Error posting job");
+      console.error("Error:", error);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -118,6 +153,32 @@ export const JobPostForm = () => {
           value={formData.companyInfo}
           onChange={handleChange}
           required
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="applyUrl">Application URL</Label>
+        <Input
+          id="applyUrl"
+          name="applyUrl"
+          type="url"
+          value={formData.applyUrl}
+          onChange={handleChange}
+          required
+          placeholder="https://example.com/apply"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="companyUrl">Company Website</Label>
+        <Input
+          id="companyUrl"
+          name="companyUrl"
+          type="url"
+          value={formData.companyUrl}
+          onChange={handleChange}
+          required
+          placeholder="https://example.com"
         />
       </div>
 
